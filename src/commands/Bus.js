@@ -56,13 +56,18 @@ class Bus extends Command {
             return;
         }
         const routeName = StringUtil.mergeArgs(1, args);
-        const route = BusProcessor.getRouteByName(routeName);
+        let route;
+        if (!isNaN(routeName)) {
+            route = BusProcessor.getRouteByNumber(parseInt(routeName));
+        } else {
+            route = BusProcessor.getRouteByName(routeName);
+        }
         if (route) {
             BusProcessor.getArrivalTimes(route).then(arrivals => {
                 evt.channel.send(this.getArrivalsEmbed(route.long_name, arrivals));
             }).catch(console.log);
         } else {
-            evt.channel.send("Invalid Route. Note: These must match the names of the routes as per -bus routes");
+            evt.channel.send("Invalid Route. Note: These must match the names of the routes as per -bus routes, or you must use the number of the route.");
         }
     }
 
@@ -71,8 +76,10 @@ class Bus extends Command {
             .setTitle("Active RIT Bus Routes");
 
         let routesString = "";
+        let i = 1;
         routes.forEach(route => {
-            routesString += `${route.long_name}\n`;
+            routesString += `${i}. ${route.long_name}\n`;
+            i++;
         });
 
         embed.addField("Routes", routesString);

@@ -74,6 +74,11 @@ function getRouteByName(name) {
     return matchedRoutes ? matchedRoutes[0] : null;
 }
 
+function getRouteByNumber(number) {
+    const filteredRoutes = Object.values(routes).filter(route => route.is_active);
+    return number-1 < filteredRoutes.length ? filteredRoutes[number-1] : null;
+}
+
 function getActiveRoutes() {
     console.log(routes);
     return Object.values(routes).filter(route => route.is_active);
@@ -93,5 +98,6 @@ module.exports = {
     refreshInformation,
     getActiveRoutes,
     getArrivalTimes,
-    getRouteByName
+    getRouteByName,
+    getRouteByNumber
 };
