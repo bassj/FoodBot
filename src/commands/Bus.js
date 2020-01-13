@@ -90,9 +90,13 @@ class Bus extends Command {
     getArrivalsEmbed(routeName, arrivals) {
         let embed = new Discord.MessageEmbed()
             .setTitle(`${routeName} upcoming stops`);
-        Object.keys(arrivals).forEach(arrival => {
-            embed.addField(arrival, arrivals[arrival][0].time);
-        });
+        if (Object.keys(arrivals).length > 0) {
+            Object.keys(arrivals).forEach(arrival => {
+                embed.addField(arrival, arrivals[arrival][0].time);
+            });
+        } else {
+            embed.addField("No results", "No arrival times retrieved. The bus may be stopped. Try again in a few minutes.");
+        }
 
         return embed;
     }
