@@ -10,7 +10,7 @@ class Food extends Command {
             if (!PROHIBITED_CHANNELS.includes(evt.channel.id)) {
                 places.forEach((place) => {
                     if (place.sections.length > 0) {
-                        evt.channel.send(this.getEmbed(place));
+                        evt.channel.send(FoodProcessor.getFoodEmbed(place));
                     }
                 });
             } else {

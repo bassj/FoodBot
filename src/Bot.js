@@ -6,6 +6,7 @@ const CommandRegistry = new CommandRegistryImpl();
 const ModProcessor = require("./processors/ModProcessor");
 const EmojiRoleProcessor = require("./processors/EmojiRoleProcessor");
 const BusProcessor = require("./processors/BusProcessor");
+const FoodProcessor = require("./processors/FoodProcessor");
 const Env = require("./utils/Env");
 const client = new Discord.Client(
     {
@@ -78,7 +79,11 @@ database.createTables();
 ModProcessor.loadPunishmentsFromDB();
 setInterval(() => ModProcessor.tickPunishments(client), 1000);
 
-client.login(Env.getEnvVariable("discord_token")).then(() => {
+client.login(Env.getEnvVariable("discord_token")).then(() => {});
+
+client.on("ready", () => {
+    FoodProcessor.checkFoodDaily(client);
+    setInterval(() => FoodProcessor.checkFoodDaily(client), 60*1000);
 });
 
 BusProcessor.refreshInformation();

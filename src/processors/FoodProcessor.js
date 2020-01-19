@@ -1,6 +1,10 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const placeIDs = [103,104,105,106,107,108,112];
+const foodChannel = "668249652570751017";
+const serverId = "401908664018927626";
+const Discord = require("discord.js");
+let lastUpdatedDate = null;
 
 function getOpenPlaces() {
     return new Promise((resolve, reject) => {
@@ -103,7 +107,83 @@ function getSpecials() {
     });
 }
 
+function getFoodEmbed(place) {
+    let embed = new Discord.MessageEmbed()
+        .setTitle(place.name);
+    place.sections.forEach((section) => {
+        embed = embed.addField(section.header, section.times);
+    });
+
+    return embed;
+}
+
+function getSpecialsEmbed(place) {
+    let embed = new Discord.MessageEmbed().setTitle(place.name);
+    embed = addSpecialsSections(place, embed);
+    return embed;
+}
+
+function addSpecialsSections(place, embed) {
+    if (place.breakfast) {
+        embed = embed.addField("Breakfast", constructDescriptionForSpecialsCategory(place.breakfast));
+    }
+
+    if (place.lunch) {
+        embed = embed.addField("Lunch", constructDescriptionForSpecialsCategory(place.lunch));
+    }
+
+    if (place.dinner) {
+        embed = embed.addField("Dinner", constructDescriptionForSpecialsCategory(place.dinner));
+    }
+
+    return embed;
+}
+
+function constructDescriptionForSpecialsCategory(category) {
+    var description = "";
+    category.forEach((categoryItem) => {
+        description += `__${categoryItem.category}__\n`;
+        categoryItem.items.forEach((item, index) => {
+            if (index !== 0) {
+                description += ",";
+            }
+
+            description += `_${item.replace("&amp;", "&")}_`;
+        });
+        description += "\n\n";
+    });
+
+    return description;
+}
+
+function checkFoodDaily(client) {
+    const currentDate = new Date();
+    if (!lastUpdatedDate || (lastUpdatedDate.getDate() !== currentDate.getDate() && currentDate.getHours() > 1)) {
+        lastUpdatedDate = currentDate;
+        const server = client.guilds.get(serverId)
+        const channel = server.channels.resolve(foodChannel);
+        channel.bulkDelete(50);
+        getOpenPlaces().then(places => {
+            places.forEach((place) => {
+                if (place.sections.length > 0) {
+                    channel.send(getFoodEmbed(place));
+                }
+            });
+        });
+        getSpecials().then(places => {
+            places.forEach((place) => {
+                if (place.breakfast || place.lunch || place.dinner) {
+                    channel.send(getSpecialsEmbed(place));
+                }
+            });
+        });
+    }
+}
+
 module.exports = {
     getOpenPlaces,
-    getSpecials
+    getSpecials,
+    getFoodEmbed,
+    getSpecialsEmbed,
+    checkFoodDaily
 };
