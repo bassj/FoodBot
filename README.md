@@ -1,10 +1,10 @@
-# Unofficial RIT Discord Bot
-Hal is the bot that helps with managing the RIT discord server. It provides tools for the staff of the server to do moderation, and a few fun tools for the users.
+# Hobbes Food Discord Dot
+Huge thanks to Chris Bitler for writing the code used in this project. 
+Check out the source project at: `git clone https://github.com/Chris-Bitler/RIT-HAL.git` for more. 
 
-Additionally, it includes some useful tools like a course browser, bus arrival time estimator, and something to see what places to eat are open on campus.
 
-## How to run Hal
-1. Pull the code down via `git clone https://github.com/Chris-Bitler/RIT-HAL.git`
+## How to run Food Bot
+1. Pull the code down via `git clone https://github.com/bassj/FoodBot.git`
 2. Replace the `discord_token` and `rapidapi_token` in `.env.bk` with API tokens from the respective services.
 3. Move `.env.bk` to `.env`
 4. Run `npm install` in the project directory
