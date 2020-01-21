@@ -1,8 +1,8 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const placeIDs = [103,104,105,106,107,108,112];
-const foodChannel = "668249652570751017";
-const serverId = "401908664018927626";
+const foodChannel = "669059891075481633";
+const serverId = "562727616096894983";
 const Discord = require("discord.js");
 let lastUpdatedDate = null;
 
@@ -160,7 +160,7 @@ function checkFoodDaily(client) {
     const currentDate = new Date();
     if (!lastUpdatedDate || (lastUpdatedDate.getDate() !== currentDate.getDate() && currentDate.getHours() > 1)) {
         lastUpdatedDate = currentDate;
-        const server = client.guilds.get(serverId)
+        const server = client.guilds.get(serverId);
         const channel = server.channels.resolve(foodChannel);
         channel.bulkDelete(50);
         getOpenPlaces().then(places => {

@@ -3,9 +3,6 @@
 const Discord = require("discord.js");
 const CommandRegistryImpl = require("./commands/CommandRegistry");
 const CommandRegistry = new CommandRegistryImpl();
-const ModProcessor = require("./processors/ModProcessor");
-const EmojiRoleProcessor = require("./processors/EmojiRoleProcessor");
-const BusProcessor = require("./processors/BusProcessor");
 const FoodProcessor = require("./processors/FoodProcessor");
 const Env = require("./utils/Env");
 const client = new Discord.Client(
@@ -43,41 +40,12 @@ client.on("message", message => {
     }
 });
 
-client.on("guildMemberUpdate", (oldMember, newMember) => {
-    if (oldMember.roles.get(ModProcessor.MUTED_ID) && !newMember.roles.get(ModProcessor.MUTED_ID)) {
-        ModProcessor.unmuteUser(newMember);
-    }
-});
-
-client.on("guildMemberAdd", (member) => {
-    if (ModProcessor.isUserMuted(member)) {
-        ModProcessor.reassignUserMutedRole(member)
-    }
-});
-
-client.on("guildBanRemove", (guild, member) => {
-    ModProcessor.unbanUser(guild, member.id);
-});
-
-client.on("messageReactionAdd", async (reaction, user) => {
-    if (reaction.message.partial) await reaction.message.fetch();
-    if (/*reaction.message.author.id !== user.id*/!user.bot && true) {
-        const emoji = reaction.emoji;
-        const channel = reaction.message.channel;
-        reaction.message.channel.guild.members.fetch(user).then((member) => {
-            EmojiRoleProcessor.checkReactionToDB(emoji, member, channel, reaction);
-        });
-    }
-});
-
 /*process.on("exit", database.close);
 process.on("SIGINT", database.close);
 process.on("SIGUSR1", database.close);
 process.on("SIGUSR2", database.close);*/
 Env.readInEnv();
 database.createTables();
-ModProcessor.loadPunishmentsFromDB();
-setInterval(() => ModProcessor.tickPunishments(client), 1000);
 
 client.login(Env.getEnvVariable("discord_token")).then(() => {});
 
@@ -85,7 +53,3 @@ client.on("ready", () => {
     FoodProcessor.checkFoodDaily(client);
     setInterval(() => FoodProcessor.checkFoodDaily(client), 60*1000);
 });
-
-BusProcessor.refreshInformation();
-
-setInterval(() => BusProcessor.refreshInformation(), 1000*60*30); // 30 minutes
